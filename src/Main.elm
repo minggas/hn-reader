@@ -107,7 +107,7 @@ decode : Decode.Decoder Story
 decode =
     Decode.map3 Story
       (Decode.at ["title"] Decode.string)
-      (Decode.at ["author"] Decode.string)
+      (Decode.at ["by"] Decode.string)
       (Decode.at ["time"] Decode.int)
 
 
