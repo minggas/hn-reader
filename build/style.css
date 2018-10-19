@@ -1,0 +1,37 @@
+*,
+*:after,
+*:before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+li {
+  list-style: none;
+}
+
+.flex {
+  display: flex
+}
+
+.main-header {
+  width: 100%;
+  padding: 5px 2%;
+  background-color: #cb6c3d;
+}
+
+.main-nav,
+.main-nav li {
+  margin-left: 2rem;
+  align-items: center;
+}
+
+.list-container {
+  padding: 1rem 2%;
+  background-color: hsl(0, 0%, 95%)
+}
