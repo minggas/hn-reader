@@ -142,12 +142,12 @@ view model =
 
 viewLoading : Html Msg
 viewLoading =
-    div [ style "width" "100vw"
+    div [ style "width" "100%"
         , style "height" "80vh"
         , style "display" "flex"
         , style "align-items" "center"
         , style "justify-content" "center"]
-        [h1 [] [text "LOADING..."]]
+        [div [class "spinner"][]]
 
 
 viewStories : Model -> Html Msg

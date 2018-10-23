@@ -53,3 +53,22 @@ li {
 .active {
   color: white;
 }
+
+.spinner {
+  content: "";
+  display: block;
+  margin: auto;
+  border-top: 3px solid hsl(10, 100%, 50%);
+  border-right: 3px solid transparent;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  animation: spinner 0.7s linear infinite;
+  z-index: 9999;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}

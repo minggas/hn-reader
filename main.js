@@ -6683,7 +6683,7 @@ var author$project$Main$viewLoading = A2(
 	elm$html$Html$div,
 	_List_fromArray(
 		[
-			A2(elm$html$Html$Attributes$style, 'width', '100vw'),
+			A2(elm$html$Html$Attributes$style, 'width', '100%'),
 			A2(elm$html$Html$Attributes$style, 'height', '80vh'),
 			A2(elm$html$Html$Attributes$style, 'display', 'flex'),
 			A2(elm$html$Html$Attributes$style, 'align-items', 'center'),
@@ -6692,12 +6692,12 @@ var author$project$Main$viewLoading = A2(
 	_List_fromArray(
 		[
 			A2(
-			elm$html$Html$h1,
-			_List_Nil,
+			elm$html$Html$div,
 			_List_fromArray(
 				[
-					elm$html$Html$text('LOADING...')
-				]))
+					elm$html$Html$Attributes$class('spinner')
+				]),
+			_List_Nil)
 		]));
 var elm$html$Html$span = _VirtualDom_node('span');
 var elm$html$Html$Attributes$target = elm$html$Html$Attributes$stringProperty('target');
