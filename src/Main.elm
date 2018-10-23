@@ -46,7 +46,7 @@ initialModel route key =
     ,stories = []
     , loading = False
     , key = key
-    , route = route}
+    , route = News}
     
 
 
@@ -134,7 +134,7 @@ page route =
 view : Model -> Browser.Document Msg
 view model =
     {title = "Hacker News"
-    , body = [ viewHeader model.title
+    , body = [ viewHeader model.title model.route
         , if model.loading then viewLoading else viewStories model
         ]
     }
@@ -154,24 +154,49 @@ viewStories : Model -> Html Msg
 viewStories model =
     ul [ class "list-container"] (List.map viewStory model.stories)
 
-viewHeader : String -> Html Msg
-viewHeader title =
+viewHeader : String -> Route -> Html Msg
+viewHeader title route =
     header [ class "main-header flex"]
         [ h1 [] [ text title]
-        , menu [ class "main-nav flex"] (List.map viewNav [ (newsPath, "News"), (topPath, "Top"), (bestPath, "Best")])
+        , menu [ class "main-nav flex"] <| viewNav route (newsPath, "News") :: viewMenu route
         ]
 
-viewNav : NavElement -> Html Msg
-viewNav link =
-    li []
-    [ a [ href (Tuple.first link)] [ text (Tuple.second link) ] ]
+viewMenu : Route -> List (Html Msg)
+viewMenu route =
+    let
+        linkTo =
+            viewNav route
+    in
+        [linkTo (bestPath, "Best")
+        ,linkTo (topPath, "Top")]
     
+
+viewNav : Route -> NavElement -> Html Msg
+viewNav r link =
+    li []
+    [ a [ href (Tuple.first link), classList [ ( "active", isActive r (Tuple.second link)) ]] [ text (Tuple.second link) ] ]
+
+
+isActive : Route -> String -> Bool
+isActive route text =
+    case (route, text) of
+        (News, "News") ->
+            True
+    
+        (Best, "Best") ->
+            True
+        
+        (Top, "Top") ->
+            True
+
+        _ ->
+            False
 
 viewStory : Story -> Html Msg
 viewStory story =
     li [ class "story"]
-        [ a [href (maybeUrl story.url)] [ text story.title]
-        , div []
+        [ maybeUrl story.url story.title
+        , div [ class "story-info"]
         [span [] [ text ("by: " ++ story.author) ]
         , viewComments story.comments
         ]
@@ -185,12 +210,12 @@ viewComments arr =
 
         Nothing -> span [] []
 
-maybeUrl : Maybe String -> String
-maybeUrl link =
+maybeUrl : Maybe String -> String -> Html Msg
+maybeUrl link t =
     case link of
-        Just a -> a
+        Just el -> a [href el, class "story-title", target "_blank"] [ text t]
 
-        Nothing -> "#"
+        Nothing -> span [class "story-title"] [text t]
 
 -- HTTP
 
