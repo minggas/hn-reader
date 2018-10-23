@@ -1,6 +1,6 @@
 # Hacker News Reader
 
-### My version of the Hacker News webite made with Elm
+### My version of the Hacker News website made with Elm
 
 ## Getting Started
 
@@ -26,13 +26,18 @@
 
         $ elm reactor
 
-    This starts a server at http://localhost:8000. You can navigate to a Elm file called Main.elm and click to run it.
+    This starts a server at http://localhost:8000. You can navigate to the Elm file called Main.elm and click it to run.
 
     Note: The app will run without any style, still need to know how to run an external CSS file with elm reactor
 
 - #### Production Mode
 
-  - Run the command
-    $ elm make src/Main.elm --optimize --output=build/main.js
+  - Enter in the elm folder
 
-  This put on the build folder the Elm app compile in a optimize JS file. Just put that folder on your host.
+    $ cd elm
+
+  - Run the command
+
+    $ elm make src/Main.elm --optimize --output=../main.js
+
+  This put on the base folder the Elm app compile in a optimize JS file. Just put the index.html, main.js and style.css files on your host to make it work.
