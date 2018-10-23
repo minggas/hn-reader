@@ -34,10 +34,10 @@
 
   - Enter in the elm folder
 
-    $ cd elm
+        $ cd elm
 
   - Run the command
 
-    $ elm make src/Main.elm --optimize --output=../main.js
+        $ elm make src/Main.elm --optimize --output=../main.js
 
   This put on the base folder the Elm app compile in a optimize JS file. Just put the index.html, main.js and style.css files on your host to make it work.
