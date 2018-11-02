@@ -9,7 +9,7 @@ import Json.Decode as Decode
 import Url exposing (..)
 import Url.Builder exposing (..)
 import Url.Parser exposing (..)
-
+import Markdown exposing (..)
 
 -- MODEL
 
@@ -17,6 +17,7 @@ import Url.Parser exposing (..)
 type alias Model =
     {title : String
     , stories : List Story
+    , comments : List Comment
     , loading : Bool
     , key : Nav.Key
     , route : Route
@@ -24,18 +25,29 @@ type alias Model =
 
 type alias Story = 
   { title : String
+  , id : Int
   , author : String
   , time : Int
+  , score : Int
   , url : Maybe String
   , comments : Maybe (List Int)
   }
 
+type alias Comment =
+  { text : Maybe String
+  , kids : Maybe (List Int)
+  }
+
 type alias NavElement = (String, String)
+
+type alias StoryId =
+    String
 
 type Route
     = News
     | Top
     | Best
+    | Comments StoryId
     | NotFound
 
 
@@ -44,6 +56,7 @@ initialModel : Route -> Nav.Key -> Model
 initialModel route key =
     {title = "Hacker News Reader"
     ,stories = []
+    , comments = []
     , loading = False
     , key = key
     , route = News}
@@ -51,8 +64,8 @@ initialModel route key =
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flag u key =
-    ( initialModel (parseUrl u) key, fetchList "newstories.json")  
+init _ initialUrl key =
+    ( initialModel (parseUrl initialUrl) key, fetchList "newstories.json")  
 
 
 
@@ -61,12 +74,11 @@ init flag u key =
 
 type Msg
     = GetStory (Result Http.Error (List Story))
-    | GotList (Result Http.Error (List Int))
-    | Fetch String
+    | GetComments (Result Http.Error (List Comment))
+    | GetList (Result Http.Error (List Int))
+    | GetCommentList (Result Http.Error (List Int))
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-
-
 
 
 -- UPDATE
@@ -75,11 +87,8 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Fetch str -> 
-            ( model
-            , fetchList str)
-
-        GotList result ->
+   
+        GetList result ->
             case result of
                 Ok res ->
                     ( { model | loading = True } 
@@ -92,6 +101,24 @@ update msg model =
             case result of
                 Ok res ->
                     ({ model | stories = res, loading = False }
+                    , Cmd.none
+                    )
+                Err er ->
+                    (model, Cmd.none)
+
+        GetCommentList result ->
+            case result of
+                Ok res ->
+                    ({ model | loading = True }
+                    , getComments 30 res
+                    )
+                Err _ ->
+                    (model, Cmd.none)
+
+        GetComments result ->
+            case result of
+                Ok res ->
+                    ({ model | comments = res, loading = False }
                     , Cmd.none
                     )
                 Err er ->
@@ -110,22 +137,7 @@ update msg model =
                 newRoute =
                     parseUrl path
             in
-                ( { model | route = newRoute }, page model.route )
-
-page : Route -> Cmd Msg
-page route =
-    case route of
-        News ->
-            fetchList "newstories.json"
-        
-        Best ->
-            fetchList "beststories.json"
-
-        Top -> 
-            fetchList "topstories.json"
-        
-        NotFound ->
-            fetchList "newstories.json"
+                ( { model | route = newRoute }, page newRoute )
 
 
 -- VIEW
@@ -135,10 +147,29 @@ view : Model -> Browser.Document Msg
 view model =
     {title = "Hacker News"
     , body = [ viewHeader model.title model.route
-        , if model.loading then viewLoading else viewStories model
+        , if model.loading then viewLoading else viewContent model
         ]
     }
     
+viewContent : Model -> Html Msg
+viewContent model =
+    case model.route of
+        Comments id ->
+            viewComments model     
+    
+        News ->
+            viewStories model
+
+        Top ->
+            viewStories model
+        
+        Best ->
+            viewStories model
+        
+        _ -> 
+            viewStories model
+            
+
 
 viewLoading : Html Msg
 viewLoading =
@@ -153,6 +184,10 @@ viewLoading =
 viewStories : Model -> Html Msg
 viewStories model =
     ul [ class "list-container"] (List.map viewStory model.stories)
+
+viewComments : Model -> Html Msg
+viewComments model =
+    ul [ class "list-container"] (List.map viewComment model.comments)
 
 viewHeader : String -> Route -> Html Msg
 viewHeader title route =
@@ -172,9 +207,9 @@ viewMenu route =
     
 
 viewNav : Route -> NavElement -> Html Msg
-viewNav r link =
+viewNav route link =
     li []
-    [ a [ href (Tuple.first link), classList [ ( "active", isActive r (Tuple.second link)) ]] [ text (Tuple.second link) ] ]
+    [ a [ href (Tuple.first link), classList [ ( "active", isActive route (Tuple.second link)) ]] [ text (Tuple.second link) ] ]
 
 
 isActive : Route -> String -> Bool
@@ -197,16 +232,29 @@ viewStory story =
     li [ class "story"]
         [ maybeUrl story.url story.title
         , div [ class "story-info"]
-        [span [] [ text ("by: " ++ story.author) ]
-        , viewComments story.comments
+        [span [] [ text ((String.fromInt story.score) ++ "points")]
+        , span [] [ text ("by: " ++ story.author) ]
+        , commentsCounter story.comments story.id
         ]
         
         ]
 
-viewComments : Maybe (List Int) -> Html Msg
-viewComments arr =
+viewComment : Comment -> Html Msg
+viewComment comment =
+    li [ class "comment"]
+        <| Markdown.toHtml Nothing (maybeComment comment.text)
+
+maybeComment : Maybe String -> String
+maybeComment text =
+    case text of
+        Just a -> a
+            
+        Nothing -> ""
+
+commentsCounter : Maybe (List Int) -> Int -> Html Msg
+commentsCounter arr id =
     case arr of
-        Just a -> span [style "margin-left" "10px"] [ text ((String.fromInt (List.length a)) ++ " comments")]
+        Just b -> a [style "margin-left" "10px", href (commentPath (String.fromInt id))] [ text ((String.fromInt (List.length b)) ++ " comments")]
 
         Nothing -> span [] []
 
@@ -228,34 +276,51 @@ toApiUrl topic =
   Url.Builder.crossOrigin url ["v0", topic][]
 
 
-toStoryUrl : String -> String
-toStoryUrl id =
+toItemUrl : String -> String
+toItemUrl id =
   Url.Builder.crossOrigin url ["v0", "item", (id ++ ".json")][]
 
 
-decode : Decode.Decoder Story
-decode =
-    Decode.map5 Story
-      (Decode.at ["title"] Decode.string)
-      (Decode.at ["by"] Decode.string)
-      (Decode.at ["time"] Decode.int)
-      (Decode.maybe (Decode.at ["url"] Decode.string))
-      (Decode.maybe (Decode.at ["kids"] (Decode.list Decode.int)))
+decodeStory : Decode.Decoder Story
+decodeStory =
+    Decode.map7 Story
+      (Decode.field "title" Decode.string)
+      (Decode.field "id" Decode.int)
+      (Decode.field "by" Decode.string)
+      (Decode.field "time" Decode.int)
+      (Decode.field "score" Decode.int)
+      (Decode.maybe (Decode.field "url" Decode.string))
+      (Decode.maybe (Decode.field "kids" (Decode.list Decode.int)))
+
+decodeComment : Decode.Decoder Comment
+decodeComment =
+    Decode.map2 Comment
+        (Decode.maybe (Decode.field "text" Decode.string))
+        (Decode.maybe (Decode.field "kids" (Decode.list Decode.int)))
+
 
 
 fetchList : String -> Cmd Msg
 fetchList tag =
     Http.get (toApiUrl tag) (Decode.list Decode.int)
         |> Http.toTask
-        |> Task.attempt GotList
+        |> Task.attempt GetList
 
-
+fetchComments : String -> Cmd Msg
+fetchComments id =
+    Http.get (toItemUrl id) (Decode.field "kids" (Decode.list Decode.int))
+        |> Http.toTask
+        |> Task.attempt GetCommentList
 
 fetchStory : Int -> Task Http.Error Story
 fetchStory id =
-    Http.get (toStoryUrl (String.fromInt id)) decode
+    Http.get (toItemUrl (String.fromInt id)) decodeStory
         |> Http.toTask
 
+fetchComment : Int -> Task Http.Error Comment
+fetchComment id =
+    Http.get (toItemUrl (String.fromInt id)) decodeComment
+        |> Http.toTask
 
 getStories : Int -> (List Int) -> Cmd Msg
 getStories n list =
@@ -264,13 +329,21 @@ getStories n list =
         |> Task.sequence
         |> Task.attempt GetStory
 
+getComments : Int -> (List Int) -> Cmd Msg
+getComments n list =
+    List.take n list
+        |> List.map fetchComment
+        |> Task.sequence
+        |> Task.attempt GetComments
+
 
 -- PARSERS
 
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
-        [ Url.Parser.map News (Url.Parser.s "build")
+        [ Url.Parser.map News top
+        , Url.Parser.map Comments (Url.Parser.s "comment" </> Url.Parser.string)
         , Url.Parser.map News (Url.Parser.s "news")
         , Url.Parser.map Top (Url.Parser.s "top")
         , Url.Parser.map Best (Url.Parser.s "best")
@@ -299,6 +372,9 @@ pathFor route =
         Best ->
             "/best"
 
+        Comments id ->
+            "/comment/" ++ id
+
         NotFound ->
             "/error"
 
@@ -311,6 +387,29 @@ topPath =
 
 bestPath =
     pathFor Best
+
+commentPath id =
+    pathFor (Comments id)
+
+page : Route -> Cmd Msg
+page route =
+    case route of
+        News ->
+            fetchList "newstories.json"
+        
+        Best ->
+            fetchList "beststories.json"
+
+        Top -> 
+            fetchList "topstories.json"
+
+        Comments id ->
+            fetchComments id
+        
+        NotFound ->
+            fetchList "newstories.json"
+
+
 
 
 

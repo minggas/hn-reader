@@ -36,7 +36,8 @@ li {
   background-color: hsl(0, 0%, 95%)
 }
 
-.story {
+.story,
+.comment {
   padding: 0.5rem 1.5rem;
   margin: 5px 0;
 }
