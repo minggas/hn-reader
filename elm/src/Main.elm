@@ -40,14 +40,11 @@ type alias Comment =
 
 type alias NavElement = (String, String)
 
-type alias StoryId =
-    String
-
 type Route
     = News
     | Top
     | Best
-    | Comments StoryId
+    | Comments String
     | NotFound
 
 
