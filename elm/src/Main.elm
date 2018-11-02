@@ -177,18 +177,17 @@ viewStory story =
     li [ class "story"]
         [ maybeUrl story.url story.title
         , div [ class "story-info"]
-        [span [] [ text ("by: " ++ story.author) ]
-        , viewCommentsCounter story.comments
+            <| span [] [ text ("by: " ++ story.author) ] :: viewCommentsCounter story.comments
         ]
         
-        ]
+        
 
-viewCommentsCounter : Maybe (List Int) -> Html Msg
+viewCommentsCounter : Maybe (List Int) -> List (Html Msg)
 viewCommentsCounter arr =
     case arr of
-        Just a -> span [style "margin-left" "10px"] [ text ((String.fromInt (List.length a)) ++ " comments")]
+        Just a -> [span [style "margin-left" "10px"] [ text ((String.fromInt (List.length a)) ++ " comments")]]
 
-        Nothing -> span [] []
+        Nothing -> []
 
 maybeUrl : Maybe String -> String -> Html Msg
 maybeUrl link t =
