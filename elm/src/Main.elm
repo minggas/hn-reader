@@ -51,8 +51,8 @@ initialModel route key =
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flag u key =
-    ( initialModel (parseUrl u) key, fetchList "newstories.json")  
+init _ initialUrl key =
+    ( initialModel (parseUrl initialUrl) key, fetchList "newstories.json")  
 
 
 
@@ -61,8 +61,7 @@ init flag u key =
 
 type Msg
     = GetStory (Result Http.Error (List Story))
-    | GotList (Result Http.Error (List Int))
-    | Fetch String
+    | GetList (Result Http.Error (List Int))
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
 
@@ -75,11 +74,7 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Fetch str -> 
-            ( model
-            , fetchList str)
-
-        GotList result ->
+        GetList result ->
             case result of
                 Ok res ->
                     ( { model | loading = True } 
@@ -110,22 +105,7 @@ update msg model =
                 newRoute =
                     parseUrl path
             in
-                ( { model | route = newRoute }, page model.route )
-
-page : Route -> Cmd Msg
-page route =
-    case route of
-        News ->
-            fetchList "newstories.json"
-        
-        Best ->
-            fetchList "beststories.json"
-
-        Top -> 
-            fetchList "topstories.json"
-        
-        NotFound ->
-            fetchList "newstories.json"
+                ( { model | route = newRoute }, page newRoute )
 
 
 -- VIEW
@@ -198,13 +178,13 @@ viewStory story =
         [ maybeUrl story.url story.title
         , div [ class "story-info"]
         [span [] [ text ("by: " ++ story.author) ]
-        , viewComments story.comments
+        , viewCommentsCounter story.comments
         ]
         
         ]
 
-viewComments : Maybe (List Int) -> Html Msg
-viewComments arr =
+viewCommentsCounter : Maybe (List Int) -> Html Msg
+viewCommentsCounter arr =
     case arr of
         Just a -> span [style "margin-left" "10px"] [ text ((String.fromInt (List.length a)) ++ " comments")]
 
@@ -247,7 +227,7 @@ fetchList : String -> Cmd Msg
 fetchList tag =
     Http.get (toApiUrl tag) (Decode.list Decode.int)
         |> Http.toTask
-        |> Task.attempt GotList
+        |> Task.attempt GetList
 
 
 
@@ -311,6 +291,21 @@ topPath =
 
 bestPath =
     pathFor Best
+
+page : Route -> Cmd Msg
+page route =
+    case route of
+        News ->
+            fetchList "newstories.json"
+        
+        Best ->
+            fetchList "beststories.json"
+
+        Top -> 
+            fetchList "topstories.json"
+        
+        NotFound ->
+            fetchList "newstories.json"
 
 
 
