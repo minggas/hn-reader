@@ -256,7 +256,7 @@ getStories n list =
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
-        [ Url.Parser.map News (Url.Parser.s "build")
+        [ Url.Parser.map News top
         , Url.Parser.map News (Url.Parser.s "news")
         , Url.Parser.map Top (Url.Parser.s "top")
         , Url.Parser.map Best (Url.Parser.s "best")
@@ -277,16 +277,16 @@ pathFor : Route -> String
 pathFor route =
     case route of
         News ->
-            "./news"
+            "/news"
 
         Top ->
-            "./top"
+            "/top"
           
         Best ->
-            "./best"
+            "/best"
 
         NotFound ->
-            "./error"
+            "/error"
 
 
 newsPath =
