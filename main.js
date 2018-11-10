@@ -6508,6 +6508,57 @@ var author$project$Main$update = F2(
 					author$project$Main$page(newRoute));
 		}
 	});
+var elm$html$Html$a = _VirtualDom_node('a');
+var elm$html$Html$footer = _VirtualDom_node('footer');
+var elm$html$Html$span = _VirtualDom_node('span');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
+var elm$html$Html$Attributes$target = elm$html$Html$Attributes$stringProperty('target');
+var author$project$Main$viewFooter = A2(
+	elm$html$Html$footer,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$style, 'text-align', 'center'),
+			A2(elm$html$Html$Attributes$style, 'padding', '0.5rem 2rem'),
+			A2(elm$html$Html$Attributes$style, 'background-color', '#777')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$html$Html$span,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text('Develop by '),
+					A2(
+					elm$html$Html$a,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$href('https://minggas.com'),
+							elm$html$Html$Attributes$target('_blank')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Minggas')
+						]))
+				]))
+		]));
 var author$project$Main$pathFor = function (route) {
 	switch (route) {
 		case 0:
@@ -6560,10 +6611,7 @@ var elm$core$Tuple$second = function (_n0) {
 	var y = _n0.b;
 	return y;
 };
-var elm$html$Html$a = _VirtualDom_node('a');
 var elm$html$Html$li = _VirtualDom_node('li');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -6575,14 +6623,6 @@ var elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
-var elm$json$Json$Encode$string = _Json_wrap;
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Attributes$classList = function (classes) {
 	return elm$html$Html$Attributes$class(
@@ -6593,12 +6633,6 @@ var elm$html$Html$Attributes$classList = function (classes) {
 				elm$core$List$map,
 				elm$core$Tuple$first,
 				A2(elm$core$List$filter, elm$core$Tuple$second, classes))));
-};
-var elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
 };
 var author$project$Main$viewNav = F2(
 	function (r, link) {
@@ -6645,13 +6679,17 @@ var author$project$Main$viewHeader = F2(
 			elm$html$Html$header,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('main-header flex')
+					elm$html$Html$Attributes$class('main-header flex'),
+					A2(elm$html$Html$Attributes$style, 'height', '7vh')
 				]),
 			_List_fromArray(
 				[
 					A2(
 					elm$html$Html$h1,
-					_List_Nil,
+					_List_fromArray(
+						[
+							A2(elm$html$Html$Attributes$style, 'font-size', 'calc(2vw + 10px)')
+						]),
 					_List_fromArray(
 						[
 							elm$html$Html$text(title)
@@ -6672,14 +6710,12 @@ var author$project$Main$viewHeader = F2(
 				]));
 	});
 var elm$html$Html$div = _VirtualDom_node('div');
-var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
 var author$project$Main$viewLoading = A2(
 	elm$html$Html$div,
 	_List_fromArray(
 		[
 			A2(elm$html$Html$Attributes$style, 'width', '100%'),
-			A2(elm$html$Html$Attributes$style, 'height', '80vh'),
+			A2(elm$html$Html$Attributes$style, 'height', '88vh'),
 			A2(elm$html$Html$Attributes$style, 'display', 'flex'),
 			A2(elm$html$Html$Attributes$style, 'align-items', 'center'),
 			A2(elm$html$Html$Attributes$style, 'justify-content', 'center')
@@ -6694,8 +6730,6 @@ var author$project$Main$viewLoading = A2(
 				]),
 			_List_Nil)
 		]));
-var elm$html$Html$span = _VirtualDom_node('span');
-var elm$html$Html$Attributes$target = elm$html$Html$Attributes$stringProperty('target');
 var author$project$Main$maybeUrl = F2(
 	function (link, t) {
 		if (!link.$) {
@@ -6790,7 +6824,8 @@ var author$project$Main$view = function (model) {
 		az: _List_fromArray(
 			[
 				A2(author$project$Main$viewHeader, model.w, model.L),
-				model.C ? author$project$Main$viewLoading : author$project$Main$viewStories(model)
+				model.C ? author$project$Main$viewLoading : author$project$Main$viewStories(model),
+				author$project$Main$viewFooter
 			]),
 		w: 'Hacker News'
 	};

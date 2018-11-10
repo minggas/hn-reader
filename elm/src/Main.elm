@@ -116,14 +116,15 @@ view model =
     {title = "Hacker News"
     , body = [ viewHeader model.title model.route
         , if model.loading then viewLoading else viewStories model
-        ]
+        , viewFooter
+        ]    
     }
     
 
 viewLoading : Html Msg
 viewLoading =
     div [ style "width" "100%"
-        , style "height" "80vh"
+        , style "height" "88vh"
         , style "display" "flex"
         , style "align-items" "center"
         , style "justify-content" "center"]
@@ -136,10 +137,16 @@ viewStories model =
 
 viewHeader : String -> Route -> Html Msg
 viewHeader title route =
-    header [ class "main-header flex"]
-        [ h1 [] [ text title]
+    header [ class "main-header flex", style "height" "7vh"]
+        [ h1 [style "font-size" "calc(2vw + 10px)"] [ text title]
         , menu [ class "main-nav flex"] <| viewNav route (newsPath, "News") :: viewMenu route
         ]
+viewFooter : Html Msg
+viewFooter =
+    footer [style "text-align" "center"
+           , style "padding" "0.5rem 2rem"
+           , style "background-color" "#777"] 
+        [ span [] [text "Develop by ", a [ href "https://minggas.com", target "_blank" ] [text "Minggas"]] ]
 
 viewMenu : Route -> List (Html Msg)
 viewMenu route =
