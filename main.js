@@ -2360,7 +2360,7 @@ function _Http_configureProgress(xhr, maybeProgress)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.L; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.K; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
@@ -2402,7 +2402,7 @@ function _Http_toResponse(xhr)
 	return {
 		av: xhr.responseURL,
 		aP: { aD: xhr.status, k: xhr.statusText },
-		L: _Http_parseHeaders(xhr.getAllResponseHeaders()),
+		K: _Http_parseHeaders(xhr.getAllResponseHeaders()),
 		az: xhr.response
 	};
 }
@@ -4106,7 +4106,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		impl.aS,
 		impl.aQ,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.E && impl.E(sendToApp)
+			var divertHrefToApp = impl.D && impl.D(sendToApp)
 			var view = impl.aT;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4176,7 +4176,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		E: function(sendToApp)
+		D: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4489,12 +4489,12 @@ function _Browser_load(url)
 	}));
 }
 var author$project$Main$LinkClicked = function (a) {
-	return {$: 3, a: a};
+	return {$: 2, a: a};
 };
 var author$project$Main$UrlChanged = function (a) {
-	return {$: 4, a: a};
+	return {$: 3, a: a};
 };
-var author$project$Main$GotList = function (a) {
+var author$project$Main$GetList = function (a) {
 	return {$: 1, a: a};
 };
 var author$project$Main$url = 'https://hacker-news.firebaseio.com';
@@ -5746,7 +5746,7 @@ var elm$http$Http$get = F2(
 			{
 				az: elm$http$Http$emptyBody,
 				P: elm$http$Http$expectJson(decoder),
-				L: _List_Nil,
+				K: _List_Nil,
 				S: 'GET',
 				X: elm$core$Maybe$Nothing,
 				av: url,
@@ -5762,7 +5762,7 @@ var elm$json$Json$Decode$list = _Json_decodeList;
 var author$project$Main$fetchList = function (tag) {
 	return A2(
 		elm$core$Task$attempt,
-		author$project$Main$GotList,
+		author$project$Main$GetList,
 		elm$http$Http$toTask(
 			A2(
 				elm$http$Http$get,
@@ -5772,7 +5772,7 @@ var author$project$Main$fetchList = function (tag) {
 var author$project$Main$News = 0;
 var author$project$Main$initialModel = F2(
 	function (route, key) {
-		return {Q: key, C: false, D: 0, M: _List_Nil, w: 'Hacker News Reader'};
+		return {Q: key, C: false, L: 0, M: _List_Nil, w: 'Hacker News Reader'};
 	});
 var author$project$Main$NotFound = 3;
 var author$project$Main$Best = 2;
@@ -6010,11 +6010,11 @@ var author$project$Main$parseUrl = function (path) {
 	}
 };
 var author$project$Main$init = F3(
-	function (flag, u, key) {
+	function (_n0, initialUrl, key) {
 		return _Utils_Tuple2(
 			A2(
 				author$project$Main$initialModel,
-				author$project$Main$parseUrl(u),
+				author$project$Main$parseUrl(initialUrl),
 				key),
 			author$project$Main$fetchList('newstories.json'));
 	});
@@ -6457,11 +6457,6 @@ var elm$url$Url$toString = function (url) {
 var author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 2:
-				var str = msg.a;
-				return _Utils_Tuple2(
-					model,
-					author$project$Main$fetchList(str));
 			case 1:
 				var result = msg.a;
 				if (!result.$) {
@@ -6487,7 +6482,7 @@ var author$project$Main$update = F2(
 					var er = result.a;
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 				}
-			case 3:
+			case 2:
 				var urlRequest = msg.a;
 				if (!urlRequest.$) {
 					var path = urlRequest.a;
@@ -6509,20 +6504,20 @@ var author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{D: newRoute}),
-					author$project$Main$page(model.D));
+						{L: newRoute}),
+					author$project$Main$page(newRoute));
 		}
 	});
 var author$project$Main$pathFor = function (route) {
 	switch (route) {
 		case 0:
-			return '/news';
+			return './news';
 		case 1:
-			return '/top';
+			return './top';
 		case 2:
-			return '/best';
+			return './best';
 		default:
-			return '/error';
+			return './error';
 	}
 };
 var author$project$Main$newsPath = author$project$Main$pathFor(0);
@@ -6730,23 +6725,26 @@ var author$project$Main$maybeUrl = F2(
 					]));
 		}
 	});
-var author$project$Main$viewComments = function (arr) {
+var author$project$Main$viewCommentsCounter = function (arr) {
 	if (!arr.$) {
 		var a = arr.a;
-		return A2(
-			elm$html$Html$span,
-			_List_fromArray(
-				[
-					A2(elm$html$Html$Attributes$style, 'margin-left', '10px')
-				]),
-			_List_fromArray(
-				[
-					elm$html$Html$text(
-					elm$core$String$fromInt(
-						elm$core$List$length(a)) + ' comments')
-				]));
+		return _List_fromArray(
+			[
+				A2(
+				elm$html$Html$span,
+				_List_fromArray(
+					[
+						A2(elm$html$Html$Attributes$style, 'margin-left', '10px')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text(
+						elm$core$String$fromInt(
+							elm$core$List$length(a)) + ' comments')
+					]))
+			]);
 	} else {
-		return A2(elm$html$Html$span, _List_Nil, _List_Nil);
+		return _List_Nil;
 	}
 };
 var author$project$Main$viewStory = function (story) {
@@ -6765,17 +6763,16 @@ var author$project$Main$viewStory = function (story) {
 					[
 						elm$html$Html$Attributes$class('story-info')
 					]),
-				_List_fromArray(
-					[
-						A2(
+				A2(
+					elm$core$List$cons,
+					A2(
 						elm$html$Html$span,
 						_List_Nil,
 						_List_fromArray(
 							[
 								elm$html$Html$text('by: ' + story._)
 							])),
-						author$project$Main$viewComments(story.ab)
-					]))
+					author$project$Main$viewCommentsCounter(story.ab)))
 			]));
 };
 var elm$html$Html$ul = _VirtualDom_node('ul');
@@ -6792,7 +6789,7 @@ var author$project$Main$view = function (model) {
 	return {
 		az: _List_fromArray(
 			[
-				A2(author$project$Main$viewHeader, model.w, model.D),
+				A2(author$project$Main$viewHeader, model.w, model.L),
 				model.C ? author$project$Main$viewLoading : author$project$Main$viewStories(model)
 			]),
 		w: 'Hacker News'
