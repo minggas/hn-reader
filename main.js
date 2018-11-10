@@ -5865,13 +5865,14 @@ var elm$url$Url$Parser$s = function (str) {
 		}
 	};
 };
+var elm$url$Url$Parser$top = function (state) {
+	return _List_fromArray(
+		[state]);
+};
 var author$project$Main$matchers = elm$url$Url$Parser$oneOf(
 	_List_fromArray(
 		[
-			A2(
-			elm$url$Url$Parser$map,
-			0,
-			elm$url$Url$Parser$s('build')),
+			A2(elm$url$Url$Parser$map, 0, elm$url$Url$Parser$top),
 			A2(
 			elm$url$Url$Parser$map,
 			0,
@@ -6562,13 +6563,13 @@ var author$project$Main$viewFooter = A2(
 var author$project$Main$pathFor = function (route) {
 	switch (route) {
 		case 0:
-			return './news';
+			return '/news';
 		case 1:
-			return './top';
+			return '/top';
 		case 2:
-			return './best';
+			return '/best';
 		default:
-			return './error';
+			return '/error';
 	}
 };
 var author$project$Main$newsPath = author$project$Main$pathFor(0);
