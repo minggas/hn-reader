@@ -6563,13 +6563,13 @@ var author$project$Main$viewFooter = A2(
 var author$project$Main$pathFor = function (route) {
 	switch (route) {
 		case 0:
-			return '/news';
+			return 'news';
 		case 1:
-			return '/top';
+			return 'top';
 		case 2:
-			return '/best';
+			return 'best';
 		default:
-			return '/error';
+			return 'error';
 	}
 };
 var author$project$Main$newsPath = author$project$Main$pathFor(0);
