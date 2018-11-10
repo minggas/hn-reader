@@ -5865,27 +5865,41 @@ var elm$url$Url$Parser$s = function (str) {
 		}
 	};
 };
+var elm$url$Url$Parser$slash = F2(
+	function (_n0, _n1) {
+		var parseBefore = _n0;
+		var parseAfter = _n1;
+		return function (state) {
+			return A2(
+				elm$core$List$concatMap,
+				parseAfter,
+				parseBefore(state));
+		};
+	});
 var elm$url$Url$Parser$top = function (state) {
 	return _List_fromArray(
 		[state]);
 };
-var author$project$Main$matchers = elm$url$Url$Parser$oneOf(
-	_List_fromArray(
-		[
-			A2(elm$url$Url$Parser$map, 0, elm$url$Url$Parser$top),
-			A2(
-			elm$url$Url$Parser$map,
-			0,
-			elm$url$Url$Parser$s('news')),
-			A2(
-			elm$url$Url$Parser$map,
-			1,
-			elm$url$Url$Parser$s('top')),
-			A2(
-			elm$url$Url$Parser$map,
-			2,
-			elm$url$Url$Parser$s('best'))
-		]));
+var author$project$Main$matchers = A2(
+	elm$url$Url$Parser$slash,
+	elm$url$Url$Parser$s('hn-reader'),
+	elm$url$Url$Parser$oneOf(
+		_List_fromArray(
+			[
+				A2(elm$url$Url$Parser$map, 0, elm$url$Url$Parser$top),
+				A2(
+				elm$url$Url$Parser$map,
+				0,
+				elm$url$Url$Parser$s('news')),
+				A2(
+				elm$url$Url$Parser$map,
+				1,
+				elm$url$Url$Parser$s('top')),
+				A2(
+				elm$url$Url$Parser$map,
+				2,
+				elm$url$Url$Parser$s('best'))
+			])));
 var elm$url$Url$Parser$getFirstMatch = function (states) {
 	getFirstMatch:
 	while (true) {
