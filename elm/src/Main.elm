@@ -270,16 +270,16 @@ pathFor : Route -> String
 pathFor route =
     case route of
         News ->
-            "/news"
+            "./news"
 
         Top ->
-            "/top"
+            "./top"
           
         Best ->
-            "/best"
+            "./best"
 
         NotFound ->
-            "/error"
+            "./error"
 
 
 newsPath =
